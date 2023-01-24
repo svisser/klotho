@@ -380,7 +380,6 @@ jobs:
           name: cloudwatch-logs-${{ matrix.app_to_test }}
           path: ${{ runner.temp }}/cw-logs/
       - name: pulumi destroy
-        if: always()
         uses: klothoplatform/gh-action-retry@v1
         with:
           description: pulumi destroy
