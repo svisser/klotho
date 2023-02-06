@@ -1183,7 +1183,7 @@ export class CloudCCLib {
 
         const clients = this.addConnectionString(
             orm,
-            pulumi.interpolate`postgresql://${username}:${password}@${proxy.endpoint}:5432/${dbName}`
+            pulumi.interpolate`postgresql://${username}:${password}@${proxy.endpoint}:5432/${rds.id}`
         )
 
         const resource = pulumi.interpolate`arn:aws:rds-db:${this.region}:${this.account.accountId}:dbuser:${rds.resourceId}/${username}`
