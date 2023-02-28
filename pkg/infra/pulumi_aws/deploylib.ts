@@ -182,35 +182,37 @@ export class CloudCCLib {
         const klothoSG = new aws.ec2.SecurityGroup(sgName, {
             name: sgName,
             vpcId: this.klothoVPC.id,
-            egress: [
-                {
-                    cidrBlocks: ['0.0.0.0/0'],
-                    description: 'Allows all outbound IPv4 traffic.',
-                    fromPort: 0,
-                    protocol: '-1',
-                    toPort: 0,
-                },
-            ],
-            ingress: [
-                {
-                    description:
-                        'Allows inbound traffic from network interfaces and instances that are assigned to the same security group.',
-                    fromPort: 0,
-                    protocol: '-1',
-                    self: true,
-                    toPort: 0,
-                },
-                {
-                    description: 'For EKS control plane',
-                    cidrBlocks: ['0.0.0.0/0'],
-                    fromPort: 9443,
-                    protocol: 'TCP',
-                    self: true,
-                    toPort: 9443,
-                },
-            ],
         })
         this.sgs = new Array(klothoSG.id)
+
+        new aws.ec2.SecurityGroupRule(`${this.name}-private-ingress`, {
+            type: 'egress',
+            cidrBlocks: ['0.0.0.0/0'],
+            description: 'Allows all outbound IPv4 traffic.',
+            fromPort: 0,
+            protocol: '-1',
+            toPort: 0,
+        })
+
+        new aws.ec2.SecurityGroupRule(`${this.name}-private-ingress`, {
+            type: 'ingress',
+            description:
+                'Allows inbound traffic from network interfaces and instances that are assigned to the same security group.',
+            fromPort: 0,
+            protocol: '-1',
+            self: true,
+            toPort: 0,
+        })
+
+        new aws.ec2.SecurityGroupRule(`${this.name}-private-ingress`, {
+            type: 'ingress',
+            description: 'For EKS control plane',
+            cidrBlocks: ['0.0.0.0/0'],
+            fromPort: 9443,
+            protocol: 'TCP',
+            self: true,
+            toPort: 9443,
+        })
 
         pulumi.output(this.klothoVPC.privateSubnets).apply((ps) => {
             const cidrBlocks: any = ps.map((subnet) => subnet.subnet.cidrBlock)
